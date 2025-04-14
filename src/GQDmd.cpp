@@ -1,7 +1,7 @@
 /*
  * GQDmd.h
  * GJW驱动应用层程序
- * 日期: 2025.04.12
+ * 日期: 2025.04.14
  * 作者: txl
  */
 
@@ -9,47 +9,6 @@
 
 GQDMD::GQDMD()
 {}
-
-//写位置指令
-//电机ID，Position位置，加速度ACC，速度Speed
-int GQDMD::WritePos(uint8_t ID, int32_t Position, uint16_t ACC, uint16_t Speed)
-{
-	uint16_t wDat[4];
-	wDat[0] = Position>>16;
-	wDat[1] = Position&0xffff;
-	wDat[2] = ACC;
-	wDat[3] = Speed;
-	return writeReg(ID, GQDMD_GOAL_POSITION, wDat, 4);
-}
-
-//舵机ID，Position位置
-int GQDMD::WritePos(uint8_t ID, int32_t Position)
-{
-	uint16_t wDat[2];
-	wDat[0] = Position>>16;
-	wDat[1] = Position&0xffff;
-	return writeReg(ID, GQDMD_GOAL_POSITION, wDat, 2);
-}
-
-//舵机ID，Position位置
-void GQDMD::WritePosEx(uint8_t ID, int32_t Position)
-{
-	uint16_t wDat[2];
-	wDat[0] = Position>>16;
-	wDat[1] = Position&0xffff;
-	writeUser(ID, GQDMD_GOAL_POSITION, wDat, 2);
-}
-
-//电机ID，Position位置，加速度ACC，速度Speed
-void GQDMD::WritePosEx(uint8_t ID, int32_t Position, uint16_t ACC, uint16_t Speed)
-{
-	uint16_t wDat[4];
-	wDat[0] = Position>>16;
-	wDat[1] = Position&0xffff;
-	wDat[2] = ACC;
-	wDat[3] = Speed;
-	writeUser(ID, GQDMD_GOAL_POSITION, wDat, 4);
-}
 
 //舵机ID，Position位置
 void GQDMD::SyncWritePos(uint8_t ID, int32_t Position)
@@ -60,19 +19,6 @@ void GQDMD::SyncWritePos(uint8_t ID, int32_t Position)
 	writeSync(ID, GQDMD_GOAL_POSITION, wDat, 2);
 }
 
-//恒速模式控制指令
-int GQDMD::WriteSpe(uint8_t ID, int16_t Speed, uint16_t ACC)
-{
-	uint16_t wDat[2];
-	wDat[0] = ACC;
-	wDat[1] = Speed;
-	return writeReg(ID, GQDMD_GOAL_ACC, wDat, 2);
-}
-
-int GQDMD::WriteSpe(uint8_t ID, int16_t Speed)
-{
-	return writeReg(ID, GQDMD_GOAL_SPEED, Speed);
-}
 
 //模式切换
 void GQDMD::WheelMode(uint8_t ID)
@@ -87,7 +33,6 @@ void GQDMD::WheelMode(uint8_t ID)
 	if(!cf){
 		WriteMode(ID, 1);
 	}
-	WriteSpe(ID, 0);
 }
 
 void GQDMD::ServoMode(uint8_t ID)
@@ -144,49 +89,6 @@ int GQDMD::CalibrationOfs(uint8_t ID)
 	return LockMem(ID);
 }
 
-int32_t GQDMD::ReadPos(int ID)
-{
-	uint16_t wDat[2];
-	readReg(ID, GQDMD_PRESENT_POSITION, wDat, 2);
-	int32_t Pos = wDat[1]|(wDat[0]<<16);
-	return Pos;
-}
-
-int GQDMD::ReadISpeed(int ID)
-{
-	return readReg(ID, GQDMD_PRESENT_ISPEED);
-}
-
-int GQDMD::ReadESpeed(int ID)
-{
-	return readReg(ID, GQDMD_PRESENT_ESPEED);
-}
-
-int GQDMD::ReadVoltage(int ID)
-{
-	return readReg(ID, GQDMD_PRESENT_VOLTAGE);
-}
-
-int GQDMD::ReadTemper(int ID)
-{
-	return readReg(ID, GQDMD_PRESENT_TEMPERATURE);
-}
-
-int GQDMD::ReadCurrent(int ID)
-{
-	return readReg(ID, GQDMD_PRESENT_CURRENT);
-}
-
-int GQDMD::ReadLoad(int ID)
-{
-	return readReg(ID, GQDMD_PRESENT_LOAD);
-}
-
-int GQDMD::ReadStatus(int ID)
-{
-	return readReg(ID, GQDMD_PRESENT_ERROR);
-}
-
 int GQDMD::SpeedCtl(int ID, int16_t Speed, int16_t ACC, int16_t Torque, int16_t beatTime, uint8_t Ack)
 {
 	uint16_t wDat[6];
@@ -200,7 +102,7 @@ int GQDMD::SpeedCtl(int ID, int16_t Speed, int16_t ACC, int16_t Torque, int16_t 
 	wDat[2] = Torque;
 	wDat[3] = beatTime;
     query();
-	if(telegram.ack){
+	if(telegram.ack&MD_CTL_ACK){
 		while(u8state != COM_IDLE){
 			poll();
 		}
@@ -234,7 +136,7 @@ int GQDMD::PositionCtl(int ID, int32_t Position, int16_t Speed, int16_t ACC, int
 	wDat[3] = ACC;
 	wDat[4] = Torque;
     query();
-	if(telegram.ack){
+	if(telegram.ack&MD_CTL_ACK){
 		while(u8state != COM_IDLE){
 			poll();
 		}
@@ -265,7 +167,7 @@ int GQDMD::TorqueCtl(int ID, int16_t Torque, int16_t beatTime, uint8_t Ack)
 	wDat[0] = Torque;
 	wDat[1] = beatTime;
     query();
-	if(telegram.ack){
+	if(telegram.ack&MD_CTL_ACK){
 		while(u8state != COM_IDLE){
 			poll();
 		}
@@ -299,7 +201,7 @@ int GQDMD::SetpCtl(int ID, int32_t Setp, int16_t Speed, int16_t ACC, int16_t Tor
 	wDat[3] = ACC;
 	wDat[4] = Torque;
     query();
-	if(telegram.ack){
+	if(telegram.ack&MD_CTL_ACK){
 		while(u8state != COM_IDLE){
 			poll();
 		}
@@ -319,7 +221,7 @@ int GQDMD::SetpCtl(int ID, int32_t Setp, int16_t Speed, int16_t ACC, int16_t Tor
 	return 1;
 }
 
-int GQDMD::ReadStatus(int ID, uint16_t rstErr)
+int GQDMD::StatusCtl(int ID, uint16_t rstErr)
 {
 	uint16_t wDat[6];
 	telegram.u8id = ID;
@@ -331,7 +233,7 @@ int GQDMD::ReadStatus(int ID, uint16_t rstErr)
 	while(u8state != COM_IDLE){
 		poll();
 	}
-	if(!u8lastError){
+	if(!u8lastError&MD_CTL_ACK){
 		motorTurn = (wDat[1]|(wDat[0]<<16));
 		motorAngle = wDat[2];
 		motorSpeed = wDat[3];

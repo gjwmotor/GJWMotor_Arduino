@@ -1,13 +1,15 @@
 ﻿/*
  * GQDmd.h
  * GJW驱动应用层程序
- * 日期: 2025.04.12
+ * 日期: 2025.04.14
  * 作者: txl
  */
 
 #ifndef _GQDMD_H
 #define _GQDMD_H
 
+#define MD_CTL_ACK (1<<0)
+#define MD_CTL_SYNC (1<<4)
 
 //内存表定义
 #define GQDMD_GOAL_POSITION (1*64+2)
@@ -38,10 +40,6 @@ class GQDMD : public Modbus
 {
 public:
 	GQDMD();
-	int WritePos(uint8_t ID, int32_t Position, uint16_t ACC, uint16_t Speed);//写位置指令
-	int WritePos(uint8_t ID, int32_t Position);//写位置指令
-	int WriteSpe(uint8_t ID, int16_t Speed, uint16_t ACC);//恒速模式控制指令
-	int WriteSpe(uint8_t ID, int16_t Speed);//恒速模式控制指令
 	int WriteMode(uint8_t ID, uint16_t Mode);//模式切换
 	void WheelMode(uint8_t ID);//恒速模式切换
 	void ServoMode(uint8_t ID);//伺服模式切换
@@ -49,22 +47,12 @@ public:
 	int unLockMem(uint8_t ID, uint16_t Lock, uint16_t Key);//eprom解锁
 	int LockMem(uint8_t ID);//eprom加锁
 	int CalibrationOfs(uint8_t ID);//中位校准
-	int32_t ReadPos(int ID);//读位置
-	int ReadISpeed(int ID);
-	int ReadESpeed(int ID);
-	void WritePosEx(uint8_t ID, int32_t Position);
-	void WritePosEx(uint8_t ID, int32_t Position, uint16_t ACC, uint16_t Speed);
 	void SyncWritePos(uint8_t ID, int32_t Position);
-	int ReadVoltage(int ID);//读电压
-	int ReadTemper(int ID);//读温度
-	int ReadStatus(int ID);//读状态
-	int ReadCurrent(int ID);//读电流
-	int ReadLoad(int ID);//读输出扭力
 	int SpeedCtl(int ID, int16_t Speed, int16_t ACC, int16_t Torque, int16_t beatTime, uint8_t Ack = 1);//速度控制指令
 	int PositionCtl(int ID, int32_t Position, int16_t Speed, int16_t ACC, int16_t Torque, uint8_t Ack = 1);//位置控制指令
 	int TorqueCtl(int ID, int16_t Torque, int16_t beatTime, uint8_t Ack = 1);//扭矩控制指令
 	int SetpCtl(int ID, int32_t Setp, int16_t Speed, int16_t ACC, int16_t Torque, uint8_t Ack = 1);//步进控制指令
-	int ReadStatus(int ID, uint16_t rstErr);//驱动状态反馈
+	int StatusCtl(int ID, uint16_t rstErr);//驱动状态反馈
 public:
 	int32_t motorTurn;
 	int16_t motorSpeed;
