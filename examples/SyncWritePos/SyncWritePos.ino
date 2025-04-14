@@ -3,8 +3,11 @@
 GQDMD gqdmd;
 
 void setup() {
-  gqdmd.begin(&Serial1, 115200);
-  gqdmd.setTimeOut(100);
+  Serial.begin(115200);
+  Serial1.begin(1000000, SERIAL_8N1, 5, 4);
+  gqdmd.begin(&Serial1);// baud-rate at 1000000
+  gqdmd.setTxEnd_T32(1000000);// baud-rate at 1000000
+  gqdmd.setTimeOut(100); // if there is no answer in 100 ms, roll over
   delay(1000);
   gqdmd.EnableTorque(0, 1);//广播指令打开所有驱动器扭矩开关
   gqdmd.setFlush(0);//打开发送缓存功能，必需调用flushTx()才能将缓冲指令发送
