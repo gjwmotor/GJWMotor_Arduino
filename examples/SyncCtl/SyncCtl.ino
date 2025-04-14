@@ -15,7 +15,7 @@ void setup()
 void loop()
 {
   Serial.println("m1~m4 sync speed 1000");
-  gqdmd.SpeedCtl(1, 1000, 500, 600, 0, 0x10);//bit4=1 sycn;bit0=1 ack
+  gqdmd.SpeedCtl(1, 1000, 500, 600, 0, 0x10);//bit4=1 sycn;bit0=0 no ack
   gqdmd.SpeedCtl(2, 1000, 500, 600, 0, 0x10);
   gqdmd.SpeedCtl(3, 1000, 500, 600, 0, 0x10);
   gqdmd.SpeedCtl(4, 1000, 500, 600, 0, 0x10);
@@ -23,7 +23,7 @@ void loop()
   delay(6000);
 
   Serial.println("m1~m4 sync speed 0");
-  gqdmd.SpeedCtl(1, 0, 500, 600, 0, 0x10);//bit4=1 sycn;bit0=1 ack
+  gqdmd.SpeedCtl(1, 0, 500, 600, 0, 0x10);//bit4=1 sycn;bit0=0 no ack
   gqdmd.SpeedCtl(2, 0, 500, 600, 0, 0x10);
   gqdmd.SpeedCtl(3, 0, 500, 600, 0, 0x10);
   gqdmd.SpeedCtl(4, 0, 500, 600, 0, 0x10);
@@ -31,7 +31,7 @@ void loop()
   delay(2000);
 
   Serial.println("m1~m4 sync speed -1000");
-  gqdmd.SpeedCtl(1, -1000, 500, 600, 0, 0x10);//bit4=1 sycn;bit0=1 ack
+  gqdmd.SpeedCtl(1, -1000, 500, 600, 0, 0x10);//bit4=1 sycn;bit0=0 no ack
   gqdmd.SpeedCtl(2, -1000, 500, 600, 0, 0x10);
   gqdmd.SpeedCtl(3, -1000, 500, 600, 0, 0x10);
   gqdmd.SpeedCtl(4, -1000, 500, 600, 0, 0x10);
@@ -39,7 +39,7 @@ void loop()
   delay(6000);
 
   Serial.println("m1~m4 sync speed 0");
-  gqdmd.SpeedCtl(1, 0, 500, 600, 0, 0x10);//bit4=1 sycn;bit0=1 ack
+  gqdmd.SpeedCtl(1, 0, 500, 600, 0, 0x10);//bit4=1 sycn;bit0=0 no ack
   gqdmd.SpeedCtl(2, 0, 500, 600, 0, 0x10);
   gqdmd.SpeedCtl(3, 0, 500, 600, 0, 0x10);
   gqdmd.SpeedCtl(4, 0, 500, 600, 0, 0x10);

@@ -14,7 +14,7 @@ void setup()
 
 void loop()
 {
-  gqdmd.ReadStatus(1, 0);
+  gqdmd.StatusCtl(1, 0);
   if(!gqdmd.getLastError()){
     Serial.println(gqdmd.motorTurn);
     Serial.println(gqdmd.motorAngle);
