@@ -1,7 +1,7 @@
 /*
  * GQDmd.h
  * GJW驱动应用层程序
- * 日期: 2025.04.14
+ * 日期: 2025.06.16
  * 作者: txl
  */
 
@@ -233,7 +233,7 @@ int GQDMD::StatusCtl(int ID, uint16_t rstErr)
 	while(u8state != COM_IDLE){
 		poll();
 	}
-	if(!u8lastError&MD_CTL_ACK){
+	if(!u8lastError){
 		motorTurn = (wDat[1]|(wDat[0]<<16));
 		motorAngle = wDat[2];
 		motorSpeed = wDat[3];
